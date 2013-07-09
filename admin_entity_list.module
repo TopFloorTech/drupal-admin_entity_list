@@ -1,0 +1,103 @@
+<?php
+/**
+ * @file admin_entity_list.module
+ * TODO: Enter file description here.
+ */
+
+
+/**
+ * Implements hook_views_api().
+ */
+function admin_entity_list_views_api() {
+  return array(
+    'api' => '3.0-alpha1',
+    'path' => drupal_get_path('module', 'admin_entity_list'),
+  );
+}
+
+function admin_entity_list_menu() {
+  $items = array();
+
+  $items['admin/config/administration/manage_entities'] = array(
+    'title' => 'Admin Entity List Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('admin_entity_list_admin'),
+    'access arguments' => array('administer settings'),
+    'file' => 'admin_entity_list.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+   );
+  return $items;
+}
+
+function admin_entity_list_entity_info_alter(&$entity_info) {
+
+  $eck_types = _admin_entity_list_get_enabled_entity_types();
+
+  if(empty($eck_types)){
+    return;
+  }
+
+  foreach($eck_types as $eck_type){
+    $entity_info[$eck_type]['view modes']['admin_edit'] = array(
+      'label' => t('Admin Edit'),
+      'custom settings' => TRUE,
+    );
+  }
+}
+
+function _admin_entity_list_humanize($machine_name){
+  return ucfirst(str_replace("_"," ",$machine_name));
+}
+
+function admin_entity_list_render_add_links($entity_type, $node_bundle = FALSE){
+  $entity_info = entity_get_info($entity_type);
+  $bundles = $entity_info['bundles'];
+  $link_list = array();
+  $options = array(
+    'query' => drupal_get_destination(),
+  );
+  if($node_bundle !== FALSE){
+    $node_bundle_dashes = str_replace('_','-',$node_bundle);
+    $link_list[] = l( t("Add")." ".$bundles[$node_bundle]['label'],
+                   'node/add/'.$node_bundle_dashes,
+                   $options );
+  } else {
+    foreach($bundles as $bundle){
+      $link_list[] = l( t("Add")." ".$bundle['label'],$bundle['crud']['add']['path'],$options);
+    }
+  }
+
+$links = theme('item_list', array(
+         'type' => 'ul',
+         'attributes' => array('class' => 'action-links'),
+         'items' => $link_list));
+
+  return $links;
+
+}
+
+function _admin_entity_list_get_enabled_entity_types(){
+ $eck_types = &drupal_static(__FUNCTION__);
+ if (!isset($eck_types)) {
+   $eck_types = variable_get('admin_entity_list_enabled_entities');
+   $eck_types = array_filter($eck_types,
+                function($a){
+                  return ($a !== 0);
+                }
+   );
+ }
+  return $eck_types;
+}
+
+function _admin_entity_list_get_enabled_node_bundles(){
+ $node_bundles = &drupal_static(__FUNCTION__);
+ if (!isset($node_bundles)) {
+   $node_bundles = variable_get('admin_entity_list_enabled_node_bundles');
+   $node_bundles = array_filter($node_bundles,
+                function($a){
+                  return ($a !== 0);
+                }
+   );
+ }
+  return $node_bundles;
+}

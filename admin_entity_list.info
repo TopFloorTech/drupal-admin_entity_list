@@ -1,0 +1,5 @@
+name = Admin Entity List
+description = TODO: Description of module
+dependencies[] = draggableviews
+dependencies[] = eck
+core = 7.x

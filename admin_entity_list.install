@@ -1,0 +1,10 @@
+<?php
+
+function admin_entity_list_install(){
+  $settings = array();
+  variable_set('admin_entity_list_settings',$settings);
+}
+
+function admin_entity_list_uninstall(){
+  variable_del('admin_entity_list_settings');
+}
