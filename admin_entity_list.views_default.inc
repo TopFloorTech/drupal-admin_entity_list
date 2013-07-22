@@ -22,14 +22,17 @@ function admin_entity_list_views_default_views() {
 
 
   $views = array();
-  foreach($eck_types as $eck_type => $_){
-    $view = _admin_entity_list_create_entity_view($eck_type);
-    $views[$view->name] = $view;
+  if(!empty($eck_types)){
+    foreach($eck_types as $eck_type => $_){
+      $view = _admin_entity_list_create_entity_view($eck_type);
+      $views[$view->name] = $view;
+    }
   }
-
-  foreach($bundles as $bundle => $_){
-    $view = _admin_entity_list_create_node_bundle_view($bundle);
-    $views[$view->name] = $view;
+  if(!empty($bundles)){  
+    foreach($bundles as $bundle => $_){
+      $view = _admin_entity_list_create_node_bundle_view($bundle);
+      $views[$view->name] = $view;
+    }
   }
 
   // At the end, return array of default views.

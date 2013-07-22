@@ -80,11 +80,13 @@ function _admin_entity_list_get_enabled_entity_types(){
  $eck_types = &drupal_static(__FUNCTION__);
  if (!isset($eck_types)) {
    $eck_types = variable_get('admin_entity_list_enabled_entities');
-   $eck_types = array_filter($eck_types,
-                function($a){
-                  return ($a !== 0);
-                }
-   );
+   if(!empty($eck_types)){
+     $eck_types = array_filter($eck_types,
+                               function($a){
+                                 return ($a !== 0);
+                               }
+     );
+   }
  }
   return $eck_types;
 }
@@ -93,11 +95,14 @@ function _admin_entity_list_get_enabled_node_bundles(){
  $node_bundles = &drupal_static(__FUNCTION__);
  if (!isset($node_bundles)) {
    $node_bundles = variable_get('admin_entity_list_enabled_node_bundles');
-   $node_bundles = array_filter($node_bundles,
-                function($a){
-                  return ($a !== 0);
-                }
-   );
+   if(!empty($node_bundles)){
+     $node_bundles = array_filter($node_bundles,
+                     function($a){
+                       return ($a !== 0);
+                     }
+     );
+   }
+
  }
   return $node_bundles;
 }
