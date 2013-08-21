@@ -53,15 +53,20 @@ function admin_entity_list_render_add_links($entity_type, $node_bundle = FALSE){
   $entity_info = entity_get_info($entity_type);
   $bundles = $entity_info['bundles'];
   $link_list = array();
-  $options = array(
-    'query' => drupal_get_destination(),
-  );
-  if($node_bundle !== FALSE){
+
+  // TODO: not sure why this isn't just if($node_bundle == TRUE), but i don't want to debug that now
+  if($node_bundle == TRUE){
+    $options = array(
+      'query' => array('destination' => 'admin/content/manage-'.$node_bundle),
+    );
     $node_bundle_dashes = str_replace('_','-',$node_bundle);
     $link_list[] = l( t("Add")." ".$bundles[$node_bundle]['label'],
                    'node/add/'.$node_bundle_dashes,
                    $options );
   } else {
+    $options = array(
+      'query' => array('destination' => 'admin/content/manage-'.$entity_type),
+    );
     foreach($bundles as $bundle){
       $link_list[] = l( t("Add")." ".$bundle['label'],$bundle['crud']['add']['path'],$options);
     }
@@ -105,4 +110,22 @@ function _admin_entity_list_get_enabled_node_bundles(){
 
  }
   return $node_bundles;
+}
+
+function admin_entity_list_get_all_enabled(){
+  $admin_entity_entities = variable_get('admin_entity_list_enabled_entities',array());
+  $admin_entity_node_bundles= variable_get('admin_entity_list_enabled_node_bundles',array());
+
+  /* dpm($admin_entity_entities); */
+  /* dpm($admin_entity_node_bundles); */
+  $not_empty = function($a){
+    if(!empty($a)){
+        return $a;
+      }
+  };
+  $enabled_entities = array_filter($admin_entity_entities,$not_empty);
+  $enabled_node_bundles = array_filter($admin_entity_node_bundles,$not_empty);
+  return array('node_bundles' => $enabled_node_bundles,
+               'entities' => $enabled_entities
+  );
 }

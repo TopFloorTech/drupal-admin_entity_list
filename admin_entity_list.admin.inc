@@ -37,5 +37,5 @@ function admin_entity_list_admin(){
 
 function admin_entity_list_form_submit($form,$form_state){
   // TODO: figure out a way to clear cache properly
-  //drupal_flush_all_caches();
+  menu_rebuild();
 }
